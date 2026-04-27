@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "clear-commands": "tsx src/clearCommands.ts",
     "dev": "tsx src/index.ts",
     "register": "tsx src/registerCommands.ts",
     "start": "node dist/index.js"

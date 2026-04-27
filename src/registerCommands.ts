@@ -1,25 +1,18 @@
-import { REST, Routes } from "discord.js";
-
 import { buildCommands } from "./commands/index.js";
 import { appConfig } from "./config.js";
+import { registerApplicationCommands } from "./discord/commandRegistry.js";
+import { createDiscordRestClient } from "./discord/restClient.js";
 import { getDiscordAuthErrorMessage } from "./utils/discordError.js";
 
 async function registerCommands(): Promise<void> {
   const commands = buildCommands().map((command) => command.definition);
-  const rest = new REST({ version: "10" }).setToken(appConfig.discordToken);
+  const rest = createDiscordRestClient();
+  const scope = await registerApplicationCommands(rest, commands);
 
-  if (appConfig.guildId) {
-    await rest.put(Routes.applicationGuildCommands(appConfig.clientId, appConfig.guildId), {
-      body: commands
-    });
-
+  if (scope === "guild") {
     console.log(`Registered ${commands.length} slash commands in guild ${appConfig.guildId}.`);
     return;
   }
-
-  await rest.put(Routes.applicationCommands(appConfig.clientId), {
-    body: commands
-  });
 
   console.log(`Registered ${commands.length} global slash commands.`);
 }
