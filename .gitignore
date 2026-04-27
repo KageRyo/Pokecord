@@ -134,6 +134,7 @@ celerybeat.pid
 .env.test.local
 .env.production.local
 !.env.example
+.codex
 .venv
 env/
 venv/
