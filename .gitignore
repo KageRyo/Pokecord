@@ -143,6 +143,7 @@ env.bak/
 venv.bak/
 node_modules/
 data/
+.runtime/
 
 # Spyder project settings
 .spyderproject
