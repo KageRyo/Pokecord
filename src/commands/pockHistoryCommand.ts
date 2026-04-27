@@ -2,30 +2,40 @@ import { SlashCommandBuilder, userMention } from "discord.js";
 import type { ChatInputCommandInteraction } from "discord.js";
 
 import type { SlashCommand } from "./command.js";
+import { getMessages } from "../i18n/messages.js";
+import { LocalizationService } from "../services/localizationService.js";
 import { PockService } from "../services/pockService.js";
 
 export class PockHistoryCommand implements SlashCommand {
   public readonly data = new SlashCommandBuilder()
     .setName("pock-history")
-    .setDescription("Show recent pock activity in this server.");
+    .setDescription("Show recent pock activity in this server.")
+    .setDescriptionLocalizations({
+      ja: "このサーバーの最近のポック履歴を表示します。",
+      "zh-TW": "顯示這個伺服器最近的戳人紀錄。"
+    });
 
   public readonly definition = this.data.toJSON();
 
-  public constructor(private readonly pockService: PockService) {}
+  public constructor(
+    private readonly pockService: PockService,
+    private readonly localizationService: LocalizationService
+  ) {}
 
   public async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     if (!interaction.inGuild() || !interaction.guildId) {
       await interaction.reply({
-        content: "This command can only be used inside a server.",
+        content: getMessages("en").commandOnlyInServer,
         ephemeral: true
       });
       return;
     }
 
+    const messages = await this.localizationService.getMessages(interaction.guildId);
     const records = await this.pockService.getRecentGuildPocks(interaction.guildId, 10);
 
     if (records.length === 0) {
-      await interaction.reply("No pock history yet.");
+      await interaction.reply(messages.noPockHistory);
       return;
     }
 
@@ -35,7 +45,7 @@ export class PockHistoryCommand implements SlashCommand {
     });
 
     await interaction.reply({
-      content: ["Recent pock history:", ...lines].join("\n")
+      content: [messages.recentPockHistoryTitle, ...lines].join("\n")
     });
   }
 }

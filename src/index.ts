@@ -2,6 +2,7 @@ import { Client, Events, GatewayIntentBits } from "discord.js";
 
 import { buildCommands } from "./commands/index.js";
 import { appConfig } from "./config.js";
+import { getMessages } from "./i18n/messages.js";
 import { getDiscordAuthErrorMessage } from "./utils/discordError.js";
 
 const client = new Client({
@@ -24,7 +25,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   if (!command) {
     await interaction.reply({
-      content: "Unknown command.",
+      content: getMessages("en").unknownCommand,
       ephemeral: true
     });
     return;
@@ -37,14 +38,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        content: "Something went wrong while handling the command.",
+        content: getMessages("en").genericCommandError,
         ephemeral: true
       });
       return;
     }
 
     await interaction.reply({
-      content: "Something went wrong while handling the command.",
+      content: getMessages("en").genericCommandError,
       ephemeral: true
     });
   }

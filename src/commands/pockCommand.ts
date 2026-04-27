@@ -1,25 +1,41 @@
-import { SlashCommandBuilder, userMention } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import type { ChatInputCommandInteraction } from "discord.js";
 
 import type { SlashCommand } from "./command.js";
+import { getMessages } from "../i18n/messages.js";
+import { LocalizationService } from "../services/localizationService.js";
 import { PockService } from "../services/pockService.js";
 
 export class PockCommand implements SlashCommand {
   public readonly data = new SlashCommandBuilder()
     .setName("pock")
     .setDescription("Pock another user.")
+    .setDescriptionLocalizations({
+      ja: "他のユーザーをポックします。",
+      "zh-TW": "戳一下其他使用者。"
+    })
     .addUserOption((option) =>
-      option.setName("user").setDescription("The user you want to pock.").setRequired(true)
+      option
+        .setName("user")
+        .setDescription("The user you want to pock.")
+        .setDescriptionLocalizations({
+          ja: "ポックしたいユーザーです。",
+          "zh-TW": "你想戳的使用者。"
+        })
+        .setRequired(true)
     );
 
   public readonly definition = this.data.toJSON();
 
-  public constructor(private readonly pockService: PockService) {}
+  public constructor(
+    private readonly pockService: PockService,
+    private readonly localizationService: LocalizationService
+  ) {}
 
   public async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     if (!interaction.inGuild() || !interaction.guildId) {
       await interaction.reply({
-        content: "This command can only be used inside a server.",
+        content: getMessages("en").commandOnlyInServer,
         ephemeral: true
       });
       return;
@@ -29,8 +45,10 @@ export class PockCommand implements SlashCommand {
     const actorUser = interaction.user;
 
     if (targetUser.id === actorUser.id) {
+      const messages = await this.localizationService.getMessages(interaction.guildId);
+
       await interaction.reply({
-        content: "You cannot pock yourself.",
+        content: messages.cannotPockYourself,
         ephemeral: true
       });
       return;
@@ -45,8 +63,10 @@ export class PockCommand implements SlashCommand {
       channelId: interaction.channelId
     });
 
+    const messages = await this.localizationService.getMessages(interaction.guildId);
+
     await interaction.reply({
-      content: `${userMention(actorUser.id)} pocked ${userMention(targetUser.id)}.`
+      content: messages.pockMessage(actorUser.id, targetUser.id)
     });
   }
 }
