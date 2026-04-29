@@ -23,6 +23,7 @@ fi
 
 cd "$ROOT_DIR"
 npm run build
+npm run register
 set -a
 source "$ENV_FILE"
 set +a

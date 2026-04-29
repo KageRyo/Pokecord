@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits } from "discord.js";
+import { Client, Events, GatewayIntentBits, MessageFlags } from "discord.js";
 
 import { buildCommands } from "./commands/index.js";
 import { appConfig } from "./config.js";
@@ -16,6 +16,10 @@ client.once(Events.ClientReady, (readyClient) => {
   console.log(`Logged in as ${readyClient.user.tag}`);
 });
 
+client.on(Events.Error, (error) => {
+  console.error("Discord client error:", error);
+});
+
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) {
     return;
@@ -24,10 +28,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
   const command = commandMap.get(interaction.commandName);
 
   if (!command) {
-    await interaction.reply({
-      content: getMessages("en").unknownCommand,
-      ephemeral: true
-    });
+    try {
+      await interaction.reply({
+        content: getMessages("en").unknownCommand,
+        flags: MessageFlags.Ephemeral
+      });
+    } catch (error) {
+      console.error("Failed to reply to unknown command interaction:", error);
+    }
+
     return;
   }
 
@@ -39,14 +48,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
         content: getMessages("en").genericCommandError,
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
       return;
     }
 
     await interaction.reply({
       content: getMessages("en").genericCommandError,
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
   }
 });

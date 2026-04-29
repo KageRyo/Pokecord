@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import type { ChatInputCommandInteraction } from "discord.js";
 
 import type { SlashCommand } from "./command.js";
@@ -36,7 +36,7 @@ export class PockCommand implements SlashCommand {
     if (!interaction.inGuild() || !interaction.guildId) {
       await interaction.reply({
         content: getMessages("en").commandOnlyInServer,
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
       return;
     }
@@ -49,7 +49,7 @@ export class PockCommand implements SlashCommand {
 
       await interaction.reply({
         content: messages.cannotPockYourself,
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
       return;
     }

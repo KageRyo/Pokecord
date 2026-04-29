@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, userMention } from "discord.js";
+import { MessageFlags, SlashCommandBuilder, userMention } from "discord.js";
 import type { ChatInputCommandInteraction } from "discord.js";
 
 import type { SlashCommand } from "./command.js";
@@ -26,7 +26,7 @@ export class PockHistoryCommand implements SlashCommand {
     if (!interaction.inGuild() || !interaction.guildId) {
       await interaction.reply({
         content: getMessages("en").commandOnlyInServer,
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
       return;
     }
