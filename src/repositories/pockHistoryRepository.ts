@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { PockRecord } from "../domain/pockRecord.js";
+import { appConfig } from "../config.js";
 import { ensureDirectory } from "../utils/ensureDirectory.js";
 
 interface PockHistoryData {
@@ -21,6 +22,7 @@ export class PockHistoryRepository {
     const data = await this.readData();
 
     data.records.push(record);
+    data.records = this.trimToRecentPerGuild(data.records, record.guildId, appConfig.maxPockHistoryPerGuild);
 
     await this.writeData(data);
   }
@@ -60,5 +62,15 @@ export class PockHistoryRepository {
   private async writeData(data: PockHistoryData): Promise<void> {
     await ensureDirectory(path.dirname(this.filePath));
     await writeFile(this.filePath, JSON.stringify(data, null, 2), "utf-8");
+  }
+
+  private trimToRecentPerGuild(records: PockRecord[], guildId: string, limit: number): PockRecord[] {
+    const recordsForOtherGuilds = records.filter((record) => record.guildId !== guildId);
+    const recentRecordsForGuild = records
+      .filter((record) => record.guildId === guildId)
+      .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
+      .slice(0, limit);
+
+    return [...recordsForOtherGuilds, ...recentRecordsForGuild];
   }
 }

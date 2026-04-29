@@ -7,6 +7,7 @@ export interface I18nMessages {
   cannotPockYourself: string;
   noPockHistory: string;
   recentPockHistoryTitle: string;
+  pockHistoryEntry(index: number, actorId: string, targetId: string, happenedAt: string): string;
   pockMessage(actorId: string, targetId: string): string;
   languageUpdated: string;
   clearCommandsDone(scope: "global" | "guild", guildId?: string): string;
@@ -20,6 +21,8 @@ const messages: Record<AppLocale, I18nMessages> = {
     cannotPockYourself: "You cannot pock yourself.",
     noPockHistory: "No pock history yet.",
     recentPockHistoryTitle: "Recent pock history:",
+    pockHistoryEntry: (index, actorId, targetId, happenedAt) =>
+      `${index}. <@${actorId}> pocked <@${targetId}> ${happenedAt}`,
     pockMessage: (actorId, targetId) => `<@${actorId}> pocked <@${targetId}>.`,
     languageUpdated: "Language has been updated to English.",
     clearCommandsDone: (scope, guildId) =>
@@ -34,6 +37,8 @@ const messages: Record<AppLocale, I18nMessages> = {
     cannotPockYourself: "自分自身をポックすることはできません。",
     noPockHistory: "まだポック履歴はありません。",
     recentPockHistoryTitle: "最近のポック履歴:",
+    pockHistoryEntry: (index, actorId, targetId, happenedAt) =>
+      `${index}. <@${actorId}> が <@${targetId}> をポックしました。 ${happenedAt}`,
     pockMessage: (actorId, targetId) => `<@${actorId}> が <@${targetId}> をポックしました。`,
     languageUpdated: "言語を日本語に変更しました。",
     clearCommandsDone: (scope, guildId) =>
@@ -48,6 +53,8 @@ const messages: Record<AppLocale, I18nMessages> = {
     cannotPockYourself: "你不能戳自己。",
     noPockHistory: "目前還沒有戳人紀錄。",
     recentPockHistoryTitle: "最近的戳人紀錄:",
+    pockHistoryEntry: (index, actorId, targetId, happenedAt) =>
+      `${index}. <@${actorId}> 戳了 <@${targetId}> 一下，${happenedAt}`,
     pockMessage: (actorId, targetId) => `<@${actorId}> 戳了 <@${targetId}> 一下。`,
     languageUpdated: "語言已切換為繁體中文。",
     clearCommandsDone: (scope, guildId) =>

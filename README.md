@@ -38,11 +38,13 @@ cp .env.example .env
 - `DISCORD_TOKEN`
 - `DISCORD_CLIENT_ID`
 - `DISCORD_GUILD_ID`
+- `POCK_HISTORY_MAX_PER_GUILD` (optional, default: `500`)
 
 `DISCORD_GUILD_ID` is optional.
 
 - If set, commands are registered to that server only, which is better for development because updates appear quickly.
 - If left empty, commands are registered globally, which is better for production but can take longer to appear in Discord.
+- `POCK_HISTORY_MAX_PER_GUILD` controls how many history records are retained per server. Older records for the same server are trimmed automatically when new pocks are added.
 
 ## Register Slash Commands
 
@@ -105,4 +107,6 @@ src/
 
 - `/pock` uses a Discord user option, so the real usage in the UI will be selecting a user rather than typing a raw username string.
 - `/pock` stays public in the channel, so both the sender and the target can see it in the server.
+- `/pock-history` currently shows the latest 10 records for the current server.
+- Pock history is not stored forever. The bot keeps the most recent `POCK_HISTORY_MAX_PER_GUILD` records per server and trims older ones automatically.
 - Pock history and language settings are currently stored in local files. This is simple and appropriate for a small bot, but it can be replaced later with SQLite or another database without changing the command flow much.

@@ -1,4 +1,4 @@
-import { MessageFlags, SlashCommandBuilder, userMention } from "discord.js";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import type { ChatInputCommandInteraction } from "discord.js";
 
 import type { SlashCommand } from "./command.js";
@@ -41,7 +41,7 @@ export class PockHistoryCommand implements SlashCommand {
 
     const lines = records.map((record, index) => {
       const happenedAt = `<t:${Math.floor(new Date(record.createdAt).getTime() / 1000)}:R>`;
-      return `${index + 1}. ${userMention(record.actorUserId)} pocked ${userMention(record.targetUserId)} ${happenedAt}`;
+      return messages.pockHistoryEntry(index + 1, record.actorUserId, record.targetUserId, happenedAt);
     });
 
     await interaction.reply({
