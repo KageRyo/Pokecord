@@ -28,15 +28,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
   const command = commandMap.get(interaction.commandName);
 
   if (!command) {
-    try {
-      await interaction.reply({
-        content: getMessages("en").unknownCommand,
-        flags: MessageFlags.Ephemeral
-      });
-    } catch (error) {
-      console.error("Failed to reply to unknown command interaction:", error);
-    }
-
     return;
   }
 

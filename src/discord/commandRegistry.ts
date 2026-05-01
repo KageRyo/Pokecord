@@ -1,5 +1,9 @@
 import { Routes } from "discord.js";
-import type { RESTPostAPIApplicationCommandsJSONBody, REST } from "discord.js";
+import type {
+  RESTGetAPIApplicationCommandsResult,
+  RESTPostAPIApplicationCommandsJSONBody,
+  REST
+} from "discord.js";
 
 import { appConfig } from "../config.js";
 
@@ -8,20 +12,57 @@ export async function registerApplicationCommands(
   commands: RESTPostAPIApplicationCommandsJSONBody[]
 ): Promise<"global" | "guild"> {
   if (appConfig.guildId) {
-    await rest.put(Routes.applicationGuildCommands(appConfig.clientId, appConfig.guildId), {
-      body: commands
-    });
+    for (const command of commands) {
+      await rest.post(Routes.applicationGuildCommands(appConfig.clientId, appConfig.guildId), {
+        body: command
+      });
+    }
 
     return "guild";
   }
 
-  await rest.put(Routes.applicationCommands(appConfig.clientId), {
-    body: commands
-  });
+  for (const command of commands) {
+    await rest.post(Routes.applicationCommands(appConfig.clientId), {
+      body: command
+    });
+  }
 
   return "global";
 }
 
-export async function clearApplicationCommands(rest: REST): Promise<"global" | "guild"> {
-  return registerApplicationCommands(rest, []);
+export async function clearApplicationCommands(
+  rest: REST,
+  commandNames: string[]
+): Promise<"global" | "guild"> {
+  if (appConfig.guildId) {
+    const commands = await rest.get(
+      Routes.applicationGuildCommands(appConfig.clientId, appConfig.guildId)
+    ) as RESTGetAPIApplicationCommandsResult;
+
+    for (const command of commands) {
+      if (!commandNames.includes(command.name)) {
+        continue;
+      }
+
+      await rest.delete(
+        Routes.applicationGuildCommand(appConfig.clientId, appConfig.guildId, command.id)
+      );
+    }
+
+    return "guild";
+  }
+
+  const commands = await rest.get(
+    Routes.applicationCommands(appConfig.clientId)
+  ) as RESTGetAPIApplicationCommandsResult;
+
+  for (const command of commands) {
+    if (!commandNames.includes(command.name)) {
+      continue;
+    }
+
+    await rest.delete(Routes.applicationCommand(appConfig.clientId, command.id));
+  }
+
+  return "global";
 }
