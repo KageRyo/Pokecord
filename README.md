@@ -1,6 +1,6 @@
 # Pokecord
 
-Pokecord is a Discord bot that lets users pock each other in a server, similar to Facebook's poke feature.
+Pokecord is a Discord bot that lets users pock each other in a server, similar to Facebook's poke feature. The command name is intentionally `/pock` throughout this project.
 
 ## Features
 
