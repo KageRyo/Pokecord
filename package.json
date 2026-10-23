@@ -1,6 +1,6 @@
 {
   "name": "pokecord",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Discord bot for poking users and tracking poke history.",
   "main": "dist/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "discord.js": "^14.25.1",
+    "discord.js": "^14.27.0",
     "dotenv": "^17.2.3"
   },
   "devDependencies": {
